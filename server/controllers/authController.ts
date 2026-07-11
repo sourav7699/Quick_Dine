@@ -19,7 +19,7 @@ export const registerUser = async (
 ): Promise<void> => {
   try {
     const { name, email, password, phone, role } = req.body;
-    if (!name || !email || !password || !phone || !role) {
+    if (!name || !email || !password) {
       res.status(400).json({ message: "Please fill all fields" });
       return;
     }
