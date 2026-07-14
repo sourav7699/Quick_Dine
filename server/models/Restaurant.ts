@@ -12,7 +12,7 @@ export interface IRestaurant extends Document {
   address: string;
   image: string;
   chef: string;
-  tag: string[];
+  tags: string[];
   availableslots: string[];
   featured: boolean;
   exclusive: boolean;
@@ -46,7 +46,7 @@ const RestaurantSchema = new Schema<IRestaurant>(
     address: { type: String, required: true },
     image: { type: String, default: " " },
     chef: { type: String, required: true },
-    tag: [{ type: String }],
+    tags: [{ type: String }],
     availableslots: [{ type: String }],
     featured: { type: Boolean, default: false },
     exclusive: { type: Boolean, default: false },
