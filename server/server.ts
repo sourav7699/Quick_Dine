@@ -6,6 +6,7 @@ import authRouter from "./routes/authRoutes.js";
 import restaurantRouter from "./routes/restaurantRoutes.js";
 import bookingRouter from "./routes/bookingRoutes.js";
 import ownerRouter from "./routes/ownerRoutes.js";
+import adminRouter from "./routes/adminRoute.js";
 
 const app = express();
 connectDB();
@@ -17,10 +18,12 @@ app.use("/api/auth", authRouter);
 app.use("/api/restaurants", restaurantRouter);
 app.use("/api/bookings", bookingRouter);
 app.use("/api/owner", ownerRouter);
+app.use("/api/admin", adminRouter);
 
 //global error handler
+
 app.use((err: any, req: Request, res: Response, next: Function) => {
-  console.error(err.stack);
+  console.error("Unhandle Error", err);
   res.status(500).json({
     message: err.message || "Internal server error",
     stack: process.env.NODE_ENV === "production" ? undefined : err.stack,
