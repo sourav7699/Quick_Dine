@@ -10,8 +10,8 @@ const adminRouter = Router();
 adminRouter.use(Protect);
 adminRouter.use(admin);
 
-adminRouter.get("/resturants", getAllRestaurantes);
-adminRouter.get("/resturants/:id/approve", approveRestaurantes);
+adminRouter.get("/restaurants", getAllRestaurantes);
+adminRouter.put("/restaurants/:id/approve", approveRestaurantes);
 adminRouter.get("/stats", getAdminStats);
 
 export default adminRouter;

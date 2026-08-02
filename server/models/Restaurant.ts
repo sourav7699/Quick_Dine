@@ -13,12 +13,12 @@ export interface IRestaurant extends Document {
   image: string;
   chef: string;
   tags: string[];
-  availableslots: string[];
+  availableSlots: string[];
   featured: boolean;
   exclusive: boolean;
   owner: Types.ObjectId;
   status: "pending" | "approved" | "rejected";
-  totalseats: number;
+  totalSeats: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,7 +47,7 @@ const RestaurantSchema = new Schema<IRestaurant>(
     image: { type: String, default: " " },
     chef: { type: String, required: true },
     tags: [{ type: String }],
-    availableslots: [{ type: String }],
+    availableSlots: [{ type: String }],
     featured: { type: Boolean, default: false },
     exclusive: { type: Boolean, default: false },
     owner: { type: Types.ObjectId, ref: "User", required: true },
@@ -56,7 +56,7 @@ const RestaurantSchema = new Schema<IRestaurant>(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
-    totalseats: { type: Number, default: 20 },
+    totalSeats: { type: Number, default: 20 },
   },
   { timestamps: true },
 );

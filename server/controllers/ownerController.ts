@@ -28,7 +28,7 @@ export const getOwnerRestaurant = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const restaurant = await Restaurant.findOne({ Owner: req.user?._id });
+    const restaurant = await Restaurant.findOne({ owner: req.user?._id });
     if (!restaurant) {
       res.status(200).json(null);
       return;
@@ -47,8 +47,8 @@ export const createOwnerRestaurant = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const exsisting = await Restaurant.findOne({ Owner: req.user?._id });
-    if (!exsisting) {
+    const exsisting = await Restaurant.findOne({ owner: req.user?._id });
+    if (exsisting) {
       res
         .status(400)
         .json({ message: "you already have a registered restaurant" });
@@ -122,8 +122,8 @@ export const createOwnerRestaurant = async (
       chef,
       image: imageUrl,
       tags: prasedTags,
-      availableslots: parsedSlots,
-      totalseats: totalSeats ? Number(totalSeats) : 20,
+      availableSlots: parsedSlots,
+      totalSeats: totalSeats ? Number(totalSeats) : 20,
       owner: req.user?._id,
       status: "pending",
     });
@@ -167,14 +167,14 @@ export const updateOwnerRestaurant = async (
     if (location) restaurant.location = location;
     if (address) restaurant.address = address;
     if (chef) restaurant.chef = chef;
-    if (totalSeats) restaurant.totalseats = totalSeats;
+    if (totalSeats) restaurant.totalSeats = totalSeats;
     if (tags) {
       restaurant.tags =
         typeof tags === "string" ? tags.split(",").map((t) => t.trim()) : tags;
     }
 
     if (availableSlots) {
-      restaurant.availableslots =
+      restaurant.availableSlots =
         typeof availableSlots === "string"
           ? availableSlots.split(",").map((s) => s.trim())
           : availableSlots;

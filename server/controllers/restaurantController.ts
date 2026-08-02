@@ -26,8 +26,8 @@ export const getRestaurants = async (
     }
 
     if (priceRange) {
-      const price = Array.isArray(priceRange) ? priceRange : [priceRange];
-      queryObj.price = { in: price };
+      const prices = Array.isArray(priceRange) ? priceRange : [priceRange];
+      queryObj.priceRange = { $in: prices };
     }
 
     if (rating) {
@@ -42,9 +42,9 @@ export const getRestaurants = async (
     let sortOption: any = { createdAt: -1 };
     if (sort === "rating") {
       sortOption = { rating: -1 };
-    } else if (sort === "price") {
+    } else if (sort === "price_low") {
       sortOption = { priceRange: 1 };
-    } else if (sort === "price-desc") {
+    } else if (sort === "price_high") {
       sortOption = { priceRange: -1 };
     }
 
@@ -156,11 +156,11 @@ export const getRestaurantAvailability = async (
       status: "confirmed",
     });
     //map slot to available capacities
-    const availability = restaurant.availableslots.map((slot) => {
+    const availability = restaurant.availableSlots.map((slot) => {
       const bookedSeats = bookings
         .filter((b) => b.time === slot)
         .reduce((sum, b) => sum + b.guests, 0);
-      const totalSeats = restaurant.totalseats || 20;
+      const totalSeats = restaurant.totalSeats || 20;
       const availableSeats = Math.max(0, totalSeats - bookedSeats);
       return {
         time: slot,
@@ -168,6 +168,8 @@ export const getRestaurantAvailability = async (
         isAvailable: availableSeats > 0,
       };
     });
+
+    res.json(availability);
   } catch (error) {
     console.error("getRestaurantAvailability error:", error);
     res
