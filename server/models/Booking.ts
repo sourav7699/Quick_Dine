@@ -27,8 +27,8 @@ const BookingSchema = new Schema<IBooking>(
     date: { type: Date, required: true },
     time: { type: String, required: true },
     guests: { type: Number, required: true, min: 1 },
-    occasion: { type: String, required: true },
-    specialRequests: { type: String, required: true },
+    occasion: { type: String, default: "" },
+    specialRequests: { type: String, default: "" },
     status: {
       type: String,
       enum: ["confirmed", "cancelled", "completed"],

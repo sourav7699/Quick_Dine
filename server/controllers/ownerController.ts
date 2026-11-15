@@ -131,6 +131,13 @@ export const createOwnerRestaurant = async (
     res.status(201).json(restaurant);
   } catch (error: any) {
     console.error(error);
+    if (error?.http_code === 403) {
+      res.status(502).json({
+        message:
+          "Cloudinary rejected the cover image. Check the Cloudinary credentials and upload permissions, or remove the image and submit again.",
+      });
+      return;
+    }
     res.status(400).json({ message: error.message });
   }
 };
