@@ -14,10 +14,6 @@ import {
   CalendarDaysIcon,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import {
-  dummyFeaturedRestaurants,
-  dummyMyBookingsData,
-} from "../assets/assets.ts";
 import api from "../lib/api.ts";
 
 export default function Dashboard() {
