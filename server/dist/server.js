@@ -18,9 +18,6 @@ app.use("/api/bookings", bookingRouter);
 app.use("/api/owner", ownerRouter);
 app.use("/api/admin", adminRouter);
 //global error handler
-app.use((req, res) => {
-    res.status(404).json({ message: "Route not found" });
-});
 app.use((err, req, res, next) => {
     console.error("Unhandle Error", err);
     res.status(500).json({

@@ -1,6 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Calendar, Users } from "lucide-react";
 
+const DEFAULT_AVAILABLE_SLOTS = [
+  "18:00",
+  "19:00",
+  "20:00",
+  "21:00",
+  "22:00",
+];
+
 interface BookingWidgetProps {
   restaurant: any;
   selectedDate: string;
@@ -29,6 +37,19 @@ export default function BookingWidget({
   handleReserveClick,
 }: BookingWidgetProps) {
   if (!restaurant) return null;
+
+  const allSlots =
+    slotsAvailability.length > 0
+      ? slotsAvailability
+      : (restaurant.availableSlots?.length
+          ? restaurant.availableSlots
+          : DEFAULT_AVAILABLE_SLOTS
+        ).map((time: string) => ({
+          time,
+          availableSeats: 20,
+          isAvailable: true,
+        }));
+  const isToday = selectedDate === new Date().toISOString().split("T")[0];
 
   return (
     <div className="bg-white border border-outline-variant/20 p-6 rounded-md shadow-sm text-left">
@@ -89,54 +110,39 @@ export default function BookingWidget({
                 <div className="w-5 h-5 border-2 border-outline-variant/30 border-t-secondary rounded-full animate-spin"></div>
               </div>
             ) : (
-              (() => {
-                const todayStr = new Date().toISOString().split("T")[0];
-                const isToday = selectedDate === todayStr;
-                const allSlots =
-                  slotsAvailability.length > 0
-                    ? slotsAvailability
-                    : (restaurant.availableSlots || []).map((s: string) => ({
-                        time: s,
-                        availableSeats: 20,
-                        isAvailable: true,
-                      }));
-                return allSlots.filter((slotInfo: any) => {
-                  if (!isToday) return true;
-                  const [slotHour, slotMinute] = slotInfo.time
-                    .split(":")
-                    .map(Number);
-                  const now = new Date();
-                  const currentHour = now.getHours();
-                  const currentMinute = now.getMinutes();
-                  return (
-                    slotHour > currentHour ||
-                    (slotHour === currentHour && slotMinute > currentMinute)
-                  );
-                });
-              })().map((slotInfo: any) => {
+              allSlots.map((slotInfo: any) => {
                 const slot = slotInfo.time;
                 const isSelected = selectedSlot === slot;
+                const [slotHour, slotMinute] = slot.split(":").map(Number);
+                const now = new Date();
+                const isPast =
+                  isToday &&
+                  (slotHour < now.getHours() ||
+                    (slotHour === now.getHours() &&
+                      slotMinute <= now.getMinutes()));
                 const isFull =
                   !slotInfo.isAvailable ||
                   slotInfo.availableSeats < Number(selectedGuests);
+                const isUnavailable = isPast || isFull;
+
                 return (
                   <button
                     key={slot}
                     type="button"
-                    disabled={isFull}
+                    disabled={isUnavailable}
                     onClick={() => setSelectedSlot(slot)}
                     className={`py-2 px-1 text-center text-[10px] font-medium tracking-wider uppercase border transition-all rounded-sm ${
                       isSelected
                         ? "bg-secondary border-secondary text-white shadow-sm cursor-pointer"
-                        : isFull
+                        : isUnavailable
                           ? "bg-black/5 border-outline-variant/10 text-black/25 cursor-not-allowed opacity-50"
                           : "border-outline-variant/40 text-black/55 hover:border-primary hover:text-primary cursor-pointer"
                     }`}
                   >
                     {slot}
-                    {isFull && (
+                    {isUnavailable && (
                       <span className="block text-[8px] text-error uppercase mt-0.5">
-                        Full
+                        {isPast ? "Passed" : "Full"}
                       </span>
                     )}
                   </button>

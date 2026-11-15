@@ -9,7 +9,7 @@ import {
 const bookingRouter = Router();
 
 bookingRouter.post("/", Protect, createBooking);
-bookingRouter.post("/my", Protect, getMyBookings);
-bookingRouter.post("/:id/cancel", Protect, cancelBookings);
+bookingRouter.get("/my", Protect, getMyBookings);
+bookingRouter.put("/:id/cancel", Protect, cancelBookings);
 
 export default bookingRouter;

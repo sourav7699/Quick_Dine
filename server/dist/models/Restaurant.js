@@ -1,4 +1,11 @@
 import { model, Schema, Types } from "mongoose";
+export const DEFAULT_AVAILABLE_SLOTS = [
+    "18:00",
+    "19:00",
+    "20:00",
+    "21:00",
+    "22:00",
+];
 const RestaurantSchema = new Schema({
     name: { type: String, required: true, trim: true },
     slug: {
@@ -22,7 +29,10 @@ const RestaurantSchema = new Schema({
     image: { type: String, default: " " },
     chef: { type: String, required: true },
     tags: [{ type: String }],
-    availableSlots: [{ type: String }],
+    availableSlots: {
+        type: [String],
+        default: () => [...DEFAULT_AVAILABLE_SLOTS],
+    },
     featured: { type: Boolean, default: false },
     exclusive: { type: Boolean, default: false },
     owner: { type: Types.ObjectId, ref: "User", required: true },

@@ -21,6 +21,7 @@ export default function RestaurantWizard({
   const [tags, setTags] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
+  const imageInputRef = React.useRef<HTMLInputElement>(null);
   const [availableSlots, setAvailableSlots] = useState<string[]>([
     "17:00",
     "17:30",
@@ -98,8 +99,11 @@ export default function RestaurantWizard({
         "Restaurant profile submitted successfully! Awaiting Admin approval.",
       );
     } catch (error: any) {
+      const message = error?.response?.data?.message || error?.message;
       toast.error(
-        error?.response?.data?.message || "Failed to register restaurant",
+        message?.includes("unexpected status code - 403")
+          ? "Cloudinary rejected the cover image. Remove the image or check the Cloudinary credentials and upload permissions."
+          : message || "Failed to register restaurant",
       );
     } finally {
       setFormLoading(false);
@@ -189,6 +193,7 @@ export default function RestaurantWizard({
                 <Upload size={12} />
                 {imageFile ? "Change Image" : "Upload Image"}
                 <input
+                  ref={imageInputRef}
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
@@ -196,9 +201,24 @@ export default function RestaurantWizard({
                 />
               </label>
               {imageFile && (
-                <span className="block text-[10px] text-secondary font-medium">
-                  Selected: {imageFile.name}
-                </span>
+                <div className="flex items-center justify-center md:justify-start gap-3">
+                  <span className="text-[10px] text-secondary font-medium">
+                    Selected: {imageFile.name}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImageFile(null);
+                      setImagePreview("");
+                      if (imageInputRef.current) {
+                        imageInputRef.current.value = "";
+                      }
+                    }}
+                    className="text-[10px] text-error underline cursor-pointer"
+                  >
+                    Remove image
+                  </button>
+                </div>
               )}
             </div>
           </div>

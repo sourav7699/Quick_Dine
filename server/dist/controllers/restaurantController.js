@@ -1,4 +1,4 @@
-import { Restaurant } from "../models/Restaurant.js";
+import { DEFAULT_AVAILABLE_SLOTS, Restaurant, } from "../models/Restaurant.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.js";
 import { Booking } from "../models/Booking.js";
@@ -72,10 +72,10 @@ export const getRestaurantBySlug = async (req, res) => {
         //if not approved, verify authorization (admin or owner)
         if (resturant.status !== "approved") {
             let isAuthorized = false;
-            const authHeader = req.headers.authorization;
-            if (typeof authHeader === "string" && authHeader.startsWith("Bearer ")) {
+            if (req.headers.authorization &&
+                req.headers.authorization.startsWith("Bearer ")) {
                 try {
-                    const token = authHeader.split(" ")[1];
+                    const token = req.headers.authorization.split(" ")[1];
                     const decoded = jwt.verify(token, process.env.secretkey);
                     const user = await User.findById(decoded.id);
                     if (user &&
@@ -90,7 +90,9 @@ export const getRestaurantBySlug = async (req, res) => {
                 }
             }
             if (!isAuthorized) {
-                res.status(404).json({ message: "Restaurant not found" });
+                res
+                    .status(403)
+                    .json({ message: "restaurant not found or access denied" });
                 return;
             }
         }
@@ -123,7 +125,10 @@ export const getRestaurantAvailability = async (req, res) => {
             status: "confirmed",
         });
         //map slot to available capacities
-        const availability = restaurant.availableSlots.map((slot) => {
+        const availableSlots = restaurant.availableSlots.length
+            ? restaurant.availableSlots
+            : DEFAULT_AVAILABLE_SLOTS;
+        const availability = availableSlots.map((slot) => {
             const bookedSeats = bookings
                 .filter((b) => b.time === slot)
                 .reduce((sum, b) => sum + b.guests, 0);
